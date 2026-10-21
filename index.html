@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мир единиц измерения — Мягкая математика</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap');
+
+    :root {
+        --primary: #6c5ce7;
+        --secondary: #fd79a8;
+        --bg: #f0edff;
+        --text: #2d3436;
+        --vk-blue: #0077FF;
+        --brand-purple: #8E44AD;
+        --brand-pink: #E91E63;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Nunito', sans-serif;
+        background: linear-gradient(135deg, #f0edff 0%, #fef9f3 50%, #e8f8f0 100%);
+        color: var(--text);
+        padding: 20px;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Фоновый водяной знак (Реклама) */
+    body::before {
+        content: "МЯГКАЯ МАТЕМАТИКА • ПОДГОТОВКА К ОГЭ/ЕГЭ • ОЛИМПИАДЫ";
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg);
+        font-size: 60px; font-weight: 900;
+        color: rgba(108, 92, 231, 0.03);
+        white-space: nowrap; pointer-events: none;
+        z-index: 0; letter-spacing: 5px;
+    }
+
+    .container {
+        max-width: 850px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #636e72;
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+
+    /* Табы */
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .tab {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.7);
+        font-family: 'Nunito', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #636e72;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        flex: 1;
+        min-width: 140px;
+    }
+    .tab.active {
+        background: #fff;
+        color: var(--primary);
+        border-color: var(--primary);
+        box-shadow: 0 8px 20px rgba(108, 92, 231, 0.2);
+    }
+
+    /* Секции */
+    .section {
+        display: none;
+        background: rgba(255,255,255,0.95);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(108, 92, 231, 0.1);
+        animation: fadeIn 0.4s ease;
+    }
+    .section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- СХЕМА --- */
+    .scheme-container { display: flex; flex-direction: column; gap: 20px; }
+    .prefix-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 5px; }
+    .prefix-card {
+        flex: 1; min-width: 200px; background: #fff; border: 2px dashed #a29bfe;
+        border-radius: 12px; padding: 15px; text-align: center; font-size: 0.95rem;
+    }
+    .prefix-card b { color: var(--primary); font-size: 1.1rem; display: block; margin-bottom: 5px; }
+    .scheme-row { background: #fafafa; border-radius: 16px; padding: 20px; border: 2px solid #f0edff; }
+    .scheme-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; }
+    .scheme-units { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .unit-btn {
+        padding: 10px 15px; background: #fff; border: 2px solid #e0dff5;
+        border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.2s;
+    }
+    .unit-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+    .unit-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .arrow { color: #b2bec3; font-weight: 900; font-size: 1.2rem; }
+    .scheme-display {
+        margin-top: 15px; padding: 15px; background: #f7f5ff; border-radius: 12px;
+        font-weight: 800; font-size: 1.15rem; color: var(--primary);
+        text-align: center; min-height: 55px; display: flex;
+        align-items: center; justify-content: center; border-left: 5px solid var(--primary);
+    }
+    .si-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
+    .si-card {
+        background: #fff; padding: 15px; border-radius: 12px; text-align: center;
+        font-size: 0.9rem; border: 2px solid #e0dff5; transition: all 0.2s;
+    }
+    .si-card:hover { border-color: var(--secondary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(253, 121, 168, 0.15); }
+    .si-card b { display: block; color: var(--primary); font-size: 1.05rem; margin-bottom: 4px; }
+    .si-card i { font-size: 0.8rem; color: #636e72; display: block; margin-top: 4px; }
+
+    /* --- ЛЕНТА ВРЕМЕНИ И ИСТОРИЯ --- */
+    .timeline-container { overflow-x: auto; padding-bottom: 20px; cursor: grab; user-select: none; margin-bottom: 30px; }
+    .timeline-container::-webkit-scrollbar { height: 8px; }
+    .timeline-container::-webkit-scrollbar-track { background: #f0edff; border-radius: 10px; }
+    .timeline-container::-webkit-scrollbar-thumb { background: #a29bfe; border-radius: 10px; }
+    .timeline { display: flex; gap: 20px; padding: 10px; width: max-content; }
+    .time-card { width: 250px; background: #fff; border: 2px solid #f0edff; border-radius: 16px; padding: 20px; position: relative; transition: all 0.3s; }
+    .time-card:hover { border-color: var(--primary); box-shadow: 0 10px 20px rgba(108, 92, 231, 0.1); }
+    .time-card::before { content: ''; position: absolute; top: 30px; left: -22px; width: 20px; height: 2px; background: #e0dff5; }
+    .time-card:first-child::before { display: none; }
+    .time-year { font-size: 1.3rem; font-weight: 900; color: var(--secondary); margin-bottom: 10px; }
+    .time-title { font-size: 1rem; font-weight: 800; margin-bottom: 8px; color: var(--primary); }
+    .time-desc { font-size: 0.9rem; color: #636e72; line-height: 1.4; }
+
+    /* --- ВИКТОРИНА ПО ИСТОРИИ --- */
+    .history-quiz { background: #fafafa; border: 2px solid #f0edff; border-radius: 16px; padding: 25px; }
+    .history-quiz h3 { color: var(--primary); font-size: 1.3rem; margin-bottom: 15px; text-align: center;}
+    .quiz-question { margin-bottom: 20px; }
+    .quiz-question p { font-weight: 800; font-size: 1.05rem; margin-bottom: 10px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-option {
+        display: flex; align-items: center; gap: 10px; background: #fff; padding: 10px 15px;
+        border-radius: 10px; border: 2px solid #e0dff5; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; font-weight: 600;
+    }
+    .quiz-option:hover { border-color: var(--primary); background: #f7f5ff; }
+    .quiz-option input[type="radio"] { accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
+    .quiz-option.correct-answer { border-color: #00b894; background: #e8f8f0; }
+    .quiz-option.wrong-answer { border-color: #ff6b6b; background: #fff0f0; }
+
+    /* --- ТЕОРИЯ И ЗАДАНИЯ --- */
+    .theory {
+        background: #f7f5ff; border-left: 6px solid var(--primary);
+        border-radius: 12px; padding: 20px; margin-bottom: 25px; line-height: 1.6;
+    }
+    .theory h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
+    
+    .difficulty-title {
+        font-size: 1.1rem; font-weight: 900; margin: 25px 0 10px;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .diff-easy { color: #00b894; }
+    .diff-medium { color: #f39c12; }
+    .diff-hard { color: #e74c3c; }
+
+    .task {
+        background: #fafafa; border: 2px solid #f0edff; border-radius: 14px;
+        padding: 18px 20px; margin-bottom: 15px; display: flex;
+        align-items: center; justify-content: space-between; gap: 15px;
+        flex-wrap: wrap; transition: all 0.3s;
+    }
+    .task.correct { background: #e8f8f0; border-color: #00b894; }
+    .task.wrong { background: #fff0f0; border-color: #ff6b6b; }
+    .task-text { flex: 1; font-size: 1.05rem; font-weight: 600; min-width: 200px; }
+    .task-input { display: flex; align-items: center; gap: 8px; }
+    .task-input input {
+        width: 110px; padding: 10px 14px; border: 2px solid #e0dff5;
+        border-radius: 10px; font-size: 1.05rem; font-weight: 700;
+        font-family: inherit; text-align: center; outline: none;
+    }
+    .task-input input:focus { border-color: var(--primary); }
+    .task-input .unit { font-weight: 800; color: var(--primary); font-size: 1rem; }
+    .task .icon { font-size: 1.5rem; width: 30px; text-align: center; }
+
+    .btn-check {
+        display: block; width: 100%; padding: 16px; margin-top: 20px;
+        background: linear-gradient(135deg, var(--primary), #a29bfe);
+        color: white; border: none; border-radius: 14px;
+        font-size: 1.2rem; font-weight: 800; font-family: inherit;
+        cursor: pointer; box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        transition: all 0.3s;
+    }
+    .btn-check:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(108, 92, 231, 0.4); }
+
+    .result-msg {
+        text-align: center; margin-top: 15px; font-size: 1.1rem; font-weight: 800;
+        padding: 12px; border-radius: 12px; display: none;
+    }
+    .result-msg.show { display: block; }
+    .result-msg.success { background: #d6f7e9; color: #00b894; }
+    .result-msg.error { background: #ffe4ef; color: #e84393; }
+
+    /* --- РЕКЛАМНЫЙ ВИДЖЕТ --- */
+    .promo-widget {
+        position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px); border: 2px solid #e2e8f0; border-radius: 16px;
+        padding: 15px; max-width: 270px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        z-index: 100; display: flex; flex-direction: column; gap: 10px;
+    }
+    .promo-title {
+        font-size: 15px; font-weight: 900;
+        background: linear-gradient(90deg, var(--brand-purple), var(--brand-pink));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .promo-text { font-size: 12px; color: #475569; line-height: 1.4; margin-bottom: 5px; }
+    .promo-btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 8px 12px; border-radius: 8px; font-size: 12px;
+        font-weight: 800; text-decoration: none; transition: background 0.2s; text-align: center;
+    }
+    .btn-vk { background-color: var(--vk-blue); color: white; }
+    .btn-vk:hover { background-color: #005bb5; }
+    .btn-msg { background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-msg:hover { background-color: #e2e8f0; }
+
+    @media (max-width: 768px) {
+        .tabs { flex-direction: column; }
+        .task { flex-direction: column; align-items: flex-start; }
+        .task-input { width: 100%; }
+        .task-input input { flex: 1; }
+        .promo-widget { position: relative; bottom: auto; right: auto; margin-top: 30px; max-width: 100%; width: 100%; }
+        .promo-btn-row { display: flex; gap: 10px; }
+        .promo-btn { flex: 1; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📏 Мир единиц измерения</h1>
+    <p class="subtitle">Интерактивный справочник и викторина от «Мягкой математики»</p>
+
+    <!-- Табы -->
+    <div class="tabs">
+        <button class="tab active" onclick="openTab('scheme', this)">🎛 Схема</button>
+        <button class="tab" onclick="openTab('timeline', this)">⏳ История</button>
+        <button class="tab" onclick="openTab('part1', this)">✏️ Практика 1</button>
+        <button class="tab" onclick="openTab('part2', this)">📐 Площади</button>
+        <button class="tab" onclick="openTab('part3', this)">📦 Объёмы</button>
+    </div>
+
+    <!-- ================= СХЕМА ================= -->
+    <div id="scheme" class="section active">
+        <div class="scheme-container">
+            <!-- Подсказки по приставкам -->
+            <div class="prefix-row">
+                <div class="prefix-card"><b>КИЛО-</b><br>означает <b>1000</b> таких частей</div>
+                <div class="prefix-card"><b>МИЛЛИ-</b><br>означает <b>одну тысячную</b> часть (0,001)</div>
+            </div>
+
+            <!-- Длина -->
+            <div class="scheme-row">
+                <div class="scheme-title">📏 Длина (базовая — Метр, м)</div>
+                <div class="scheme-units">
+                    <button class="unit-btn" onclick="showConversion('1000 мм = 1 м', this)">мм</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('100 см = 1 м', this)">см</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('10 дм = 1 м', this)">дм</button><span class="arrow">←</span>
+                    <button class="unit-btn active" onclick="showConversion('1 м — базовая единица длины в СИ. 1 м = 100 см = 1000 мм', this)">м</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('1000 м = 1 км', this)">км</button>
+                </div>
+                <div class="scheme-display">👉 1 м — базовая единица длины в СИ. 1 м = 100 см = 1000 мм</div>
+            </div>
+
+            <!-- Масса -->
+            <div class="scheme-row">
+                <div class="scheme-title">⚖️ Масса (базовая для расчетов — Грамм, г)</div>
+                <div class="scheme-units">
+                    <button class="unit-btn" onclick="showConversion('1000 мг = 1 г', this)">мг</button><span class="arrow">←</span>
+                    <button class="unit-btn active" onclick="showConversion('1 г — базовая единица для расчетов. 1 г = 1000 мг', this)">г</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('1000 г = 1 кг', this)">кг</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('100 кг = 1 ц', this)">ц</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('1000 кг = 1 т', this)">т</button>
+                </div>
+                <div class="scheme-display">👉 1 г — базовая единица для расчетов. 1 г = 1000 мг</div>
+            </div>
+
+            <!-- Время -->
+            <div class="scheme-row">
+                <div class="scheme-title">⏳ Время (базовая — Секунда, с)</div>
+                <div class="scheme-units">
+                    <button class="unit-btn active" onclick="showConversion('1 с — базовая единица времени в СИ', this)">сек</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('60 с = 1 мин', this)">мин</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('60 мин = 1 ч', this)">ч</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('24 ч = 1 сутки', this)">сутки</button><span class="arrow">←</span>
+                    <button class="unit-btn" onclick="showConversion('365 суток = 1 год', this)">год</button>
+                </div>
+                <div class="scheme-display">👉 1 с — базовая единица времени в СИ</div>
+            </div>
+
+            <!-- 7 единиц СИ -->
+            <div class="scheme-row" style="background: #fff; border-color: var(--primary);">
+                <div class="scheme-title">🏛 7 основных единиц СИ</div>
+                <div class="si-grid">
+                    <div class="si-card"><b>Метр (м)</b>Длина</div>
+                    <div class="si-card"><b>Килограмм (кг)</b>Масса <i>(эталон СИ)</i></div>
+                    <div class="si-card"><b>Секунда (с)</b>Время</div>
+                    <div class="si-card"><b>Ампер (А)</b>Сила тока</div>
+                    <div class="si-card"><b>Кельвин (К)</b>Температура</div>
+                    <div class="si-card"><b>Моль (моль)</b>Кол-во в-ва</div>
+                    <div class="si-card"><b>Кандела (кд)</b>Сила света</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ИСТОРИЯ ================= -->
+    <div id="timeline" class="section">
+        <div class="timeline-container">
+            <div class="timeline">
+                <div class="time-card"><div class="time-year">~3000 г. до н.э.</div><div class="time-title">Египетский локоть</div><div class="time-desc">Длина от локтя до кончика среднего пальца фараона (около 52,3 см).</div></div>
+                <div class="time-card"><div class="time-year">~1750 г. до н.э.</div><div class="time-title">Вавилонская система</div><div class="time-desc">Вавилоняне разделили час на 60 минут, а круг — на 360 градусов.</div></div>
+                <div class="time-card"><div class="time-year">Древняя Греция</div><div class="time-title">Стадий</div><div class="time-desc">Греческая мера длины (около 185 метров). От нее произошло слово «стадион».</div></div>
+                <div class="time-card"><div class="time-year">Древний Рим</div><div class="time-title">Либра и Унция</div><div class="time-desc">Мера веса Либра (327 г) делилась на 12 частей — Унций.</div></div>
+                <div class="time-card"><div class="time-year">X–XI века</div><div class="time-title">Меры Древней Руси</div><div class="time-desc">Пядь, Локоть, Сажень, Верста (≈1 км), Пуд (16,38 кг) и Золотник (4,27 г).</div></div>
+                <div class="time-card"><div class="time-year">1675 год</div><div class="time-title">Первые секунды</div><div class="time-desc">Секунда определялась как 1/86400 часть суток.</div></div>
+                <div class="time-card"><div class="time-year">1791 год</div><div class="time-title">Рождение Метра</div><div class="time-desc">Метр определили как «одну сорокамиллионную часть меридиана Земли».</div></div>
+                <div class="time-card"><div class="time-year">1799 год</div><div class="time-title">Первый эталон Килограмма</div><div class="time-desc">Изготовлен прототип килограмма в виде металлического цилиндра.</div></div>
+                <div class="time-card"><div class="time-year">1875 год</div><div class="time-title">Метрическая конвенция</div><div class="time-desc">17 стран подписали договор о едином эталоне метра.</div></div>
+                <div class="time-card"><div class="time-year">1960 год</div><div class="time-title">Рождение системы СИ</div><div class="time-desc">Принята Международная система единиц (СИ).</div></div>
+                <div class="time-card"><div class="time-year">1983 год</div><div class="time-title">Световой метр</div><div class="time-desc">Метр — это расстояние, которое свет проходит за 1/299 792 458 секунды.</div></div>
+                <div class="time-card"><div class="time-year">2019 год</div><div class="time-title">Новая эра измерений</div><div class="time-desc">Килограмм вычисляется через постоянную Планка, а не по металлическому цилиндру.</div></div>
+            </div>
+        </div>
+
+        <div class="history-quiz">
+            <h3>🧠 Проверь себя: Викторина по истории</h3>
+            <div class="quiz-question" id="q1">
+                <p>1. Какая мера длины в Древнем Египте считалась священной?</p>
+                <div class="quiz-options">
+                    <label class="quiz-option"><input type="radio" name="q1" value="wrong"> Фут</label>
+                    <label class="quiz-option"><input type="radio" name="q1" value="correct"> Локоть</label>
+                    <label class="quiz-option"><input type="radio" name="q1" value="wrong"> Пядь</label>
+                </div>
+            </div>
+            <div class="quiz-question" id="q2">
+                <p>2. Кто подарил нам деление часа на 60 минут?</p>
+                <div class="quiz-options">
+                    <label class="quiz-option"><input type="radio" name="q2" value="wrong"> Древние греки</label>
+                    <label class="quiz-option"><input type="radio" name="q2" value="wrong"> Древние римляне</label>
+                    <label class="quiz-option"><input type="radio" name="q2" value="correct"> Вавилоняне</label>
+                </div>
+            </div>
+            <div class="quiz-question" id="q3">
+                <p>3. От какой меры произошло слово «стадион»?</p>
+                <div class="quiz-options">
+                    <label class="quiz-option"><input type="radio" name="q3" value="correct"> Стадий</label>
+                    <label class="quiz-option"><input type="radio" name="q3" value="wrong"> Либра</label>
+                    <label class="quiz-option"><input type="radio" name="q3" value="wrong"> Верста</label>
+                </div>
+            </div>
+            <div class="quiz-question" id="q4">
+                <p>4. В каком году французские ученые предложили определять метр как часть меридиана?</p>
+                <div class="quiz-options">
+                    <label class="quiz-option"><input type="radio" name="q4" value="correct"> В 1791 году</label>
+                    <label class="quiz-option"><input type="radio" name="q4" value="wrong"> В 1960 году</label>
+                    <label class="quiz-option"><input type="radio" name="q4" value="wrong"> В 2019 году</label>
+                </div>
+            </div>
+            <div class="quiz-question" id="q5">
+                <p>5. Что теперь используется для определения килограмма?</p>
+                <div class="quiz-options">
+                    <label class="quiz-option"><input type="radio" name="q5" value="correct"> Постоянная Планка</label>
+                    <label class="quiz-option"><input type="radio" name="q5" value="wrong"> Скорость света</label>
+                    <label class="quiz-option"><input type="radio" name="q5" value="wrong"> Атом цезия</label>
+                </div>
+            </div>
+            <button class="btn-check" onclick="checkHistory()">Проверить историю</button>
+            <div class="result-msg" id="msg-history"></div>
+        </div>
+    </div>
+
+    <!-- ================= ПРАКТИКА 1 ================= -->
+    <div id="part1" class="section">
+        <div class="theory">
+            <h3>💡 Как переводить?</h3>
+            <p>В <b>меньшую</b> единицу — <b>умножаем</b> (добавляем нули). В <b>большую</b> — <b>делим</b>.</p>
+            <p>1 км = 1000 м; 1 м = 100 см; 1 кг = 1000 г; 1 ч = 60 мин.</p>
+        </div>
+
+        <div class="difficulty-title diff-easy">🟢 Легкий уровень (Базовые переводы)</div>
+        <div class="task" data-answer="300"><div class="task-text">3 м = ? см</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">см</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="4000"><div class="task-text">4 т = ? кг</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">кг</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="300"><div class="task-text">5 мин = ? сек</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">сек</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="80"><div class="task-text">8 см = ? мм</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">мм</span></div><div class="icon"></div></div>
+
+        <div class="difficulty-title diff-medium">🟡 Средний уровень (Дроби и составные числа)</div>
+        <div class="task" data-answer="2300"><div class="task-text">2 км 300 м = ? м</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">м</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="1500"><div class="task-text">1,5 кг = ? г</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">г</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="2"><div class="task-text">120 мин = ? часов</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">ч</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="75"><div class="task-text">1 час 15 мин = ? мин</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">мин</span></div><div class="icon"></div></div>
+
+        <div class="difficulty-title diff-hard">🔴 Сложный уровень (Задачи и редкие единицы)</div>
+        <div class="task" data-answer="2.5"><div class="task-text">2500 г = ? кг (запиши десятичной дробью)</div><div class="task-input"><input type="number" step="0.1" placeholder="..."><span class="unit">кг</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="48"><div class="task-text">2 суток = ? часов</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">ч</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="2800"><div class="task-text">Задача: Спортсмен пробежал 2 км 500 м, а потом еще 300 м. Сколько это метров?</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">м</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="90"><div class="task-text">1 час 30 минут = ? минут</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">мин</span></div><div class="icon"></div></div>
+
+        <button class="btn-check" onclick="checkAnswers('part1')">Проверить ответы</button>
+        <div class="result-msg" id="msg-part1"></div>
+    </div>
+
+    <!-- ================= ПЛОЩАДИ ================= -->
+    <div id="part2" class="section">
+        <div class="theory">
+            <h3>📐 Перевод площадей</h3>
+            <p>Площадь — это длина в квадрате. При переводе <b>каждую линейную разницу</b> мы возводим в квадрат.</p>
+            <p><b>Пример:</b> 1 м = 10 дм. Значит, 1 м² = 10 дм × 10 дм = <b>100 дм²</b>.</p>
+            <p>1 м² = 100 дм² = 10 000 см². 1 ар (сотка) = 100 м². 1 га = 100 ар = 10 000 м².</p>
+        </div>
+
+        <div class="difficulty-title diff-easy">🟢 Легкий уровень</div>
+        <div class="task" data-answer="300"><div class="task-text">3 м² = ? дм²</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">дм²</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="4"><div class="task-text">400 дм² = ? м²</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">м²</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="10000"><div class="task-text">1 м² = ? см²</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">см²</span></div><div class="icon"></div></div>
+
+        <div class="difficulty-title diff-medium">🟡 Средний уровень</div>
+        <div class="task" data-answer="20500"><div class="task-text">2 га 5 а = ? м²</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">м²</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="5"><div class="task-text">50 000 см² = ? м²</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">м²</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="350"><div class="task-text">3 м² 50 дм² = ? дм²</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">дм²</span></div><div class="icon"></div></div>
+
+        <div class="difficulty-title diff-hard">🔴 Сложный уровень</div>
+        <div class="task" data-answer="1"><div class="task-text">100 м² = ? а (соток)</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">а</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="100"><div class="task-text">1 км² = ? га</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">га</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="2000"><div class="task-text">Задача: Комната имеет площадь 20 м². Сколько это дм²?</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">дм²</span></div><div class="icon"></div></div>
+
+        <button class="btn-check" onclick="checkAnswers('part2')">Проверить ответы</button>
+        <div class="result-msg" id="msg-part2"></div>
+    </div>
+
+    <!-- ================= ОБЪЁМЫ ================= -->
+    <div id="part3" class="section">
+        <div class="theory">
+            <h3>📦 Перевод объёмов</h3>
+            <p>Объём — это длина в кубе. При переводе линейную разницу мы возводим в куб.</p>
+            <p><b>Пример:</b> 1 м = 10 дм. Значит, 1 м³ = 10 дм × 10 дм × 10 дм = <b>1000 дм³</b>.</p>
+            <p>1 дм³ = 1 литр (л). 1 м³ = 1000 л. 1 см³ = 1000 мм³.</p>
+        </div>
+
+        <div class="difficulty-title diff-easy">🟢 Легкий уровень</div>
+        <div class="task" data-answer="2000"><div class="task-text">2 дм³ = ? см³</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">см³</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="3"><div class="task-text">3000 см³ = ? дм³</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">дм³</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="1000"><div class="task-text">1 м³ = ? л</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">л</span></div><div class="icon"></div></div>
+
+        <div class="difficulty-title diff-medium">🟡 Средний уровень</div>
+        <div class="task" data-answer="2500"><div class="task-text">2 м³ 500 дм³ = ? дм³</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">дм³</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="5000"><div class="task-text">5 дм³ = ? мл</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">мл</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="8"><div class="task-text">8000 дм³ = ? м³</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">м³</span></div><div class="icon"></div></div>
+
+        <div class="difficulty-title diff-hard">🔴 Сложный уровень</div>
+        <div class="task" data-answer="1200"><div class="task-text">1 м³ 200 дм³ = ? л</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">л</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="500"><div class="task-text">500 000 см³ = ? л</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">л</span></div><div class="icon"></div></div>
+        <div class="task" data-answer="5"><div class="task-text">Задача: Объем аквариума 5000 см³. Сколько это литров?</div><div class="task-input"><input type="number" placeholder="..."><span class="unit">л</span></div><div class="icon"></div></div>
+
+        <button class="btn-check" onclick="checkAnswers('part3')">Проверить ответы</button>
+        <div class="result-msg" id="msg-part3"></div>
+    </div>
+</div>
+
+<!-- РЕКЛАМНЫЙ ВИДЖЕТ -->
+<div class="promo-widget">
+    <div class="promo-title">🚀 Мягкая математика</div>
+    <div class="promo-text">Подготовка к ОГЭ/ЕГЭ и олимпиадам без стресса. Развиваем логику и soft skills!</div>
+    <div class="promo-btn-row">
+        <a href="https://vk.com/smartskillsmaria" target="_blank" class="promo-btn btn-vk">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13.162 18.994c.609 0 .858-.406.851-.915-.031-1.917.714-2.949 2.059-1.604 1.488 1.488 1.796 2.519 3.603 2.519h3.2c.808 0 1.126-.26 1.126-.668 0-.863-1.421-2.386-2.625-3.504-1.686-1.565-1.765-1.602-.313-3.486 1.801-2.339 4.157-5.336 2.073-5.336h-3.981c-.772 0-.828.435-1.103 1.083-.995 2.347-2.886 5.387-3.604 4.922-.751-.485-.407-2.406-.35-5.261.015-.754.011-1.271-1.141-1.539-.814-.18-1.775-.283-2.804-.283-1.865 0-3.429.126-4.525.41-1.074.276-1.45.875-1.45 1.424 0 .587.449.765 1.043.928.755.207.985.505.985 1.271 0 1.134-.211 3.876-.781 4.557-.555.664-1.401.122-2.389-1.422C4.804 11.673 3.701 8.778 3.701 7.932c0-.555.354-.94 1.148-.94h4.146c.929 0 1.013.55 1.228 1.249.619 2.008 1.666 4.674 2.528 5.868.707.978 1.244.8 1.244-.219 0-.513-.113-2.786-.113-3.995 0-1.386.331-2.014 1.145-2.014h2.568c.651 0 .849.372.849.998 0 .853-.419 2.078-.949 3.285-.42.954-.51 1.386.146 2.115 1.142 1.271 2.63 3.094 2.63 4.225 0 .595-.354.984-1.22.984h-2.826z"/></svg>
+            Группа
+        </a>
+        <a href="https://vk.com/im/convo/-229273902?entrypoint=community_page&tab=all" target="_blank" class="promo-btn btn-msg">
+            ✉️ Написать
+        </a>
+    </div>
+</div>
+
+<script>
+    // Переключение табов
+    function openTab(tabId, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // Интерактивная схема
+    function showConversion(text, btn) {
+        const row = btn.closest('.scheme-row');
+        row.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const display = row.querySelector('.scheme-display');
+        display.innerHTML = `👉 ${text}`;
+    }
+
+    // Проверка текстовых ответов
+    function checkAnswers(partId) {
+        const section = document.getElementById(partId);
+        const tasks = section.querySelectorAll('.task');
+        let correctCount = 0;
+        let total = tasks.length;
+
+        tasks.forEach(task => {
+            const input = task.querySelector('input');
+            const correctAnswer = parseFloat(task.dataset.answer);
+            const userAnswer = parseFloat(input.value);
+            const icon = task.querySelector('.icon');
+
+            task.classList.remove('correct', 'wrong');
+            icon.textContent = '';
+
+            if (isNaN(userAnswer)) {
+                task.classList.add('wrong');
+                icon.textContent = '❓';
+                return;
+            }
+
+            // Сравниваем с небольшой погрешностью для дробей
+            if (Math.abs(userAnswer - correctAnswer) < 0.001) {
+                task.classList.add('correct');
+                icon.textContent = '✅';
+                correctCount++;
+            } else {
+                task.classList.add('wrong');
+                icon.textContent = '❌';
+            }
+        });
+
+        const msg = document.getElementById('msg-' + partId);
+        msg.classList.add('show');
+        
+        if (correctCount === total) {
+            msg.className = 'result-msg show success';
+            msg.textContent = `🎉 Потрясающе! Все ${total} ответов верны!`;
+        } else {
+            msg.className = 'result-msg show error';
+            msg.textContent = `Ты правильно ответил на ${correctCount} из ${total}. Ошибки подсвечены красным — попробуй ещё раз!`;
+        }
+    }
+
+    // Проверка викторины по истории
+    function checkHistory() {
+        let correctCount = 0;
+        const totalQuestions = 5;
+
+        for (let i = 1; i <= totalQuestions; i++) {
+            const questionBlock = document.getElementById('q' + i);
+            const options = questionBlock.querySelectorAll('.quiz-option');
+            let selectedOption = null;
+
+            options.forEach(opt => opt.classList.remove('correct-answer', 'wrong-answer'));
+
+            options.forEach(opt => {
+                const radio = opt.querySelector('input');
+                if (radio.checked) {
+                    selectedOption = radio;
+                    
+                    if (radio.value === 'correct') {
+                        opt.classList.add('correct-answer');
+                        correctCount++;
+                    } else {
+                        opt.classList.add('wrong-answer');
+                        options.forEach(o => {
+                            if(o.querySelector('input').value === 'correct') {
+                                o.classList.add('correct-answer');
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        const msg = document.getElementById('msg-history');
+        msg.classList.add('show');
+        
+        if (correctCount === totalQuestions) {
+            msg.className = 'result-msg show success';
+            msg.textContent = `🏆 Великолепно! Все ${totalQuestions} ответов верны. Ты настоящий историк математики!`;
+        } else {
+            msg.className = 'result-msg show error';
+            msg.textContent = `Ты правильно ответил на ${correctCount} из ${totalQuestions}. Зеленым подсвечены правильные варианты.`;
+        }
+    }
+
+    // Drag-to-scroll для ленты времени
+    const slider = document.querySelector('.timeline-container');
+    let isDown = false, startX, scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => { isDown = false; });
+    slider.addEventListener('mouseup', () => { isDown = false; });
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2;
+        slider.scrollLeft = scrollLeft - walk;
+    });
+</script>
+
+</body>
+</html>
